@@ -1,0 +1,30 @@
+version: 2
+
+project_name: vpsdeck
+
+builds:
+  - main: ./cmd/vpsdeck
+    binary: vpsdeck
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w -X main.version={{ .Tag }}
+
+archives:
+  # Plain binaries with stable names, so the installer can use /releases/latest/download/.
+  - formats: [binary]
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+# No auto-generated changelog: it would list commit hashes and author emails.
+changelog:
+  disable: true
+
+release:
+  extra_files:
+    - glob: scripts/install.sh
